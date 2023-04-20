@@ -21,9 +21,9 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: built-project
-          path: build
+          path: dist
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v2
         with:
           branch: gh-pages
-          folder: build
+          folder: dist
