@@ -2,6 +2,15 @@ on:
   push:
     branches:
       - gh-pages
+inputs:
+  name:
+    description: 'Artifact name'
+    required: false
+    default: 'github-pages'
+  path:
+    description: "Path of the directory containing the static assets."
+    required: true
+    default: "_site/"
 jobs:
   build:
     runs-on: ubuntu-latest
