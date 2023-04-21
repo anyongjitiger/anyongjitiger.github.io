@@ -18,6 +18,8 @@ jobs:
         run: npm install
       - name: Build project
         run: npm run build
+      - name: Create artifact tarball
+        run: tar -czvf dist.tar.gz dist/
       - name: Check artifact size
         run: |
           du -sh dist/
@@ -28,8 +30,6 @@ jobs:
           name: github-pages
           path: dist.tar.gz
           if-no-files-found: error
-        run: |
-          tar -czvf dist.tar.gz dist/
       - name: List build files in the repository    
         run: |
           ls ${{ github.workspace }}/dist   
