@@ -42,4 +42,4 @@ jobs:
         id: deployment
         uses: actions/upload-pages-artifact@v1
         with:
-          path: ${{ github.workspace }}/dist
+          path: ${{ github.workspace }}/dist/
