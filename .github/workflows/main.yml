@@ -20,13 +20,17 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
+        #actions/upload-artifact default name is artifact, but actions/deploy-pages default name is github-pages, so change it
           name: github-pages
           path: 'dist/'
           if-no-files-found: error
   deploy:
+    environment:
+      name: github-pages
     needs: build
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       pages: write
       id-token: write
     steps:
