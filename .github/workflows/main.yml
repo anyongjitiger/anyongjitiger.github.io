@@ -25,9 +25,9 @@ jobs:
           name: github-pages
           path: 'dist/'
           if-no-files-found: error
-      - name: List files in the repository    
+      - name: List build files in the repository    
         run: |
-            ls ${{ github.workspace }}    
+            ls ${{ github.workspace }}/dist   
   deploy:
     environment:
       name: github-pages
