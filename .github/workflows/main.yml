@@ -3,7 +3,7 @@ on:
     branches:
       - gh-pages
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
     permissions:
       pages: write
@@ -21,6 +21,13 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           path: './dist/'
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v2
