@@ -17,6 +17,13 @@ jobs:
         run: npm install
       - name: Build project
         run: npm run build
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+        #actions/upload-artifact default name is artifact, but actions/deploy-pages default name is github-pages, so change it
+          name: github-pages
+          path: 'dist/'
+          if-no-files-found: error
   deploy:
     environment:
       name: github-pages
