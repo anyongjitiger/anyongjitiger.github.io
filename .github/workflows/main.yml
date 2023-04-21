@@ -18,16 +18,21 @@ jobs:
         run: npm install
       - name: Build project
         run: npm run build
+      - name: Check artifact size
+        run: |
+          du -sh dist/
+          if [[ $(du -s dist/ | awk '{print $1}') -gt 10000000 ]]; then exit 1; fi
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
-        #actions/upload-artifact default name is artifact, but actions/deploy-pages default name is github-pages, so change it
           name: github-pages
-          path: 'dist/'
+          path: dist.tar.gz
           if-no-files-found: error
+        run: |
+          tar -czvf dist.tar.gz dist/
       - name: List build files in the repository    
         run: |
-            ls ${{ github.workspace }}/dist   
+          ls ${{ github.workspace }}/dist   
   deploy:
     environment:
       name: github-pages
