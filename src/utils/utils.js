@@ -2,7 +2,6 @@ import { json } from 'd3-fetch';
 
 var τ = 2 * Math.PI;
 var H = 0.000036; // 0.0000360°φ ~= 4m
-var DEFAULT_CONFIG = 'current/wind/surface/level/orthographic';
 var TOPOLOGY = isMobile() ? '/data/earth-topo-mobile.json?v2' : '/data/earth-topo.json?v2';
 
 /**
@@ -460,6 +459,17 @@ function parse(hash, projectionNames, overlayTypes) {
   return result;
 }
 
+function toHash(attr) {
+  var dir = attr.date === 'current' ? 'current' : attr.date + '/' + attr.hour + 'Z';
+  var proj = [attr.projection, attr.orientation].filter(isTruthy).join('=');
+  var ol =
+    !isValue(attr.overlayType) || attr.overlayType === 'default'
+      ? ''
+      : 'overlay=' + attr.overlayType;
+  var grid = attr.showGridPoints ? 'grid=on' : '';
+  return [dir, attr.param, attr.surface, attr.level, ol, proj, grid].filter(isTruthy).join('/');
+}
+
 const utils = {
   isTruthy: isTruthy,
   isValue: isValue,
@@ -491,6 +501,7 @@ const utils = {
   formatVector: formatVector,
   loadJson: loadJson,
   distortion: distortion,
-  parse: parse
+  parse: parse,
+  toHash
 };
 export default utils;
