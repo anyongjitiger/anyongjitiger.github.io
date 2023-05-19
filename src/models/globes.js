@@ -14,18 +14,21 @@ import { geoWinkel3, geoMollweide, geoPolyhedralWaterman } from 'd3-geo-projecti
 import { isFinite, extend, debounce, random } from 'underscore';
 import utils from '../utils/utils';
 import * as d3 from 'd3';
-import { useSetAtom } from 'jotai';
+import { useAtom } from 'jotai';
+import { focusAtom } from 'jotai-optics';
 import { configurationAtom } from './configuration';
-const setConf = useSetAtom(configurationAtom);
+const orientationAtom = focusAtom(configurationAtom, (optic) => optic.prop('orientation'));
+
+const [orientationConf, setOrientationConf] = useAtom(orientationAtom);
 
 const MIN_MOVE = 4; // slack before a drag operation beings (pixels)
-var MAX_TASK_TIME = 100; // amount of time before a task yields control (millis)
-var MIN_SLEEP_TIME = 25; // amount of time a task waits before resuming (millis)
+const MAX_TASK_TIME = 100; // amount of time before a task yields control (millis)
+const MIN_SLEEP_TIME = 25; // amount of time a task waits before resuming (millis)
 const MOVE_END_WAIT = 1000; // time to wait for a move operation to be considered done (millis)
 const NULL_WIND_VECTOR = [NaN, NaN, null]; // singleton for undefined location outside the vector field [u, v, mag]
-var HOLE_VECTOR = [NaN, NaN, null]; // singleton that signifies a hole in the vector field
+const HOLE_VECTOR = [NaN, NaN, null]; // singleton that signifies a hole in the vector field
 const TRANSPARENT_BLACK = [0, 0, 0, 0]; // singleton 0 rgba
-var OVERLAY_ALPHA = Math.floor(0.4 * 255); // overlay transparency (on scale [0, 255])
+const OVERLAY_ALPHA = Math.floor(0.4 * 255); // overlay transparency (on scale [0, 255])
 
 const log = utils.log();
 const view = utils.view();
@@ -566,7 +569,7 @@ function buildInputController() {
       manipulator: globe.manipulator(startMouse, startScale)
     };
   }
-
+  // const drag = d3.drag().on();
   var zoom = d3
     .zoom()
     .on('zoomstart', function () {
@@ -606,7 +609,7 @@ function buildInputController() {
 
   var signalEnd = debounce(function () {
     if (!op || (op.type !== 'drag' && op.type !== 'zoom')) {
-      configuration.save({ orientation: globe.orientation() }, { source: 'moveEnd' });
+      // configuration.save({ orientation: globe.orientation() }, { source: 'moveEnd' });
       dispatch.trigger('moveEnd');
     }
   }, MOVE_END_WAIT); // wait for a bit to decide if user has stopped moving the globe
@@ -619,7 +622,8 @@ function buildInputController() {
           rotate = globe.locate(coord);
         if (rotate) {
           globe.projection.rotate(rotate);
-          configuration.save({ orientation: globe.orientation() }); // triggers reorientation
+          // configuration.save({ orientation: globe.orientation() }); // triggers reorientation
+          setOrientationConf(globe.orientation());
         }
         dispatch.trigger('click', globe.projection(coord), coord);
       }, log.error);
@@ -634,7 +638,7 @@ function buildInputController() {
       return;
     }
     dispatch.trigger('moveStart');
-    globe.orientation(configuration.get('orientation'), view);
+    globe.orientation(orientationConf, view);
     zoom.scale(globe.projection.scale());
     dispatch.trigger('moveEnd');
   }
